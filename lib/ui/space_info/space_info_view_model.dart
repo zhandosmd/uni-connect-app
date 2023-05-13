@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:uni_connect/ui/space_info/create_post/create_post_screen.dart';
 
 class SpacePost{
   final String text;
@@ -53,4 +55,18 @@ class SpaceInfoViewModel extends ChangeNotifier{
       date: '1 may, 14:15'
     ),
   ];
+
+  void showCreatePost(BuildContext context) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        backgroundColor: Colors.white,
+        builder: (context) {
+          return CreatePostScreen();
+        }
+    );
+  }
 }

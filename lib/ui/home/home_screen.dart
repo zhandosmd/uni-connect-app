@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
+import '../../domain/data_providers/local_data.dart';
+import '../../domain/entities/event.dart';
 import '../club_info/club_info_screen.dart';
 import '../event/event_screen.dart';
 import '../stories/stories_screen.dart';
@@ -14,25 +16,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Story> stories = [
-    Story(title: 'Welcome Party 2023', image: 'assets/images/im_stories_1.png'),
-    Story(title: 'Welcome Party 2023', image: 'assets/images/im_stories_1.png'),
-    Story(title: 'Welcome Party 2023', image: 'assets/images/im_stories_1.png'),
-    Story(title: 'Welcome Party 2023', image: 'assets/images/im_stories_1.png'),
-    Story(title: 'Welcome Party 2023', image: 'assets/images/im_stories_1.png'),
-  ];
-
-  final List<String> clubImages = [
-    'assets/images/im_club_1.png',
-    'assets/images/im_club_2.png',
-    'assets/images/im_club_3.png',
-    'assets/images/im_club_4.png',
-    'assets/images/im_club_5.png',
-    'assets/images/im_club_6.png',
-  ];
+  final stories = LocalData.stories;
+  final clubs = LocalData.clubs;
+  final events = LocalData.events;
+  final spaces = LocalData.spaces;
 
   @override
   Widget build(BuildContext context) {
+
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       child: Padding(
@@ -126,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(8)),
                     child: Image.asset(
-                      clubImages[0],
+                      clubs[0].imageUrl,
                       width: (MediaQuery.of(context).size.width - 16*4) / 3,
                     )
                   ),
@@ -134,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(8)),
                     child: Image.asset(
-                      clubImages[1],
+                      clubs[1].imageUrl,
                       width: (MediaQuery.of(context).size.width - 16*4) / 3,
                     )
                   ),
@@ -142,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(8)),
                     child: Image.asset(
-                      clubImages[2],
+                      clubs[2].imageUrl,
                       width: (MediaQuery.of(context).size.width - 16*4) / 3,
                     )
                   ),
@@ -157,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(8)),
                   child: Image.asset(
-                    clubImages[3],
+                    clubs[3].imageUrl,
                     width: (MediaQuery.of(context).size.width - 16*4) / 3,
                   )
                 ),
@@ -165,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(8)),
                   child: Image.asset(
-                    clubImages[4],
+                    clubs[4].imageUrl,
                     width: (MediaQuery.of(context).size.width - 16*4) / 3,
                   )
                 ),
@@ -173,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(8)),
                   child: Image.asset(
-                    clubImages[5],
+                    clubs[5].imageUrl,
                     width: (MediaQuery.of(context).size.width - 16*4) / 3,
                   )
                 ),
@@ -202,12 +193,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (BuildContext context, int index) {
+                  final currentEvent = events[index];
+
                   return GestureDetector(
                     onTap: (){
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (BuildContext context) {
-                            return EventScreen();
+                            return EventScreen(event: currentEvent);
                           }
                         )
                       );
@@ -216,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 218,
                       width: 205,
                       decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(8))
+                        borderRadius: BorderRadius.all(Radius.circular(10))
                       ),
                       margin: index == 0
                         ? const EdgeInsets.only(left: 16)
@@ -226,22 +219,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset('assets/images/im_events_1.png', width: 205, height: 158,),
+                          ClipRRect(
+                            borderRadius: const BorderRadius.all(Radius.circular(10)),
+                            child: Image.asset(currentEvent.imageUrl, width: 205, height: 158, fit: BoxFit.cover,)
+                          ),
                           const SizedBox(height: 7,),
-                          const Text('SDU Football Cup 2023', style: TextStyle(
+                          Text(currentEvent.title, style: const TextStyle(
                             fontWeight: FontWeight.w700
                           ),),
                           const SizedBox(height: 4,),
-                          const FittedBox(
-                            child: Text('Suleyman Demirel University Stadium', style: TextStyle(
+                          FittedBox(
+                            child: Text(currentEvent.place, style: const TextStyle(
                               fontSize: 12
                             ),),
                           ),
                           const SizedBox(height: 4,),
-                          const Text('01.09.2023, at 18:00', style: TextStyle(
+                          Text(currentEvent.date, style: const TextStyle(
                             fontSize: 12
                           ),),
-
                         ],
                       ),
                     ),
@@ -250,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 separatorBuilder: (BuildContext context, int index) {
                   return const SizedBox(width: 10,);
                 },
-                itemCount: 5,
+                itemCount: events.length,
               ),
             ),
             const SizedBox(height: 24,),
@@ -275,6 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (BuildContext context, int index) {
+                  final currentSpace = spaces[index];
+
                   return Container(
                     height: 143,
                     width: 185,
@@ -288,18 +285,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       : EdgeInsets.zero,
                     child: Stack(
                       children: [
-                        Image.asset('assets/images/im_space_1.png'),
+                        Image.asset(currentSpace.imageUrl),
                         Positioned(
                           left: 8,
                           right: 8,
                           bottom: 8,
                           child: Column(
-                            children: const [
-                              Text('ACM Community', style: TextStyle(
+                            children: [
+                              Text(currentSpace.name, style: const TextStyle(
                                 fontWeight: FontWeight.w700
                               ),),
-                              SizedBox(height: 4,),
-                              Text('163 posts', style: TextStyle(
+                              const SizedBox(height: 4,),
+                              Text(currentSpace.postLength, style: const TextStyle(
                                 fontSize: 12
                               ),),
                             ],
@@ -312,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 separatorBuilder: (BuildContext context, int index) {
                   return const SizedBox(width: 8,);
                 },
-                itemCount: 5,
+                itemCount: spaces.length,
               ),
             )
           ],

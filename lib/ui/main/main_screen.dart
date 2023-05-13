@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:uni_connect/ui/home/home_screen.dart';
+import 'package:uni_connect/ui/main/main_view_model.dart';
+import 'package:uni_connect/ui/profile/profile_view_model.dart';
 import 'package:uni_connect/ui/spaces/spaces_screen.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
@@ -16,6 +20,15 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<ProfileViewModel>().getUser();
+      context.read<MainViewModel>().getClubs();
+    });
+  }
   int selectedTab = 0;
 
   void changeSelectedTab(int index){
@@ -26,18 +39,21 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: FocusScope.of(context).unfocus,
-          child: IndexedStack(
-            // хранить все виджеты на памяти тем самым сохраняя стейт
-            index: selectedTab,
-            children: [
-              HomeScreen(),
-              SpacesScreen(),
-              ClubsScreen(),
-              ProfileScreen(),
-            ],
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: SafeArea(
+          child: GestureDetector(
+            onTap: FocusScope.of(context).unfocus,
+            child: IndexedStack(
+              // хранить все виджеты на памяти тем самым сохраняя стейт
+              index: selectedTab,
+              children: [
+                HomeScreen(),
+                SpacesScreen(),
+                ClubsScreen(),
+                ProfileScreen(),
+              ],
+            ),
           ),
         ),
       ),

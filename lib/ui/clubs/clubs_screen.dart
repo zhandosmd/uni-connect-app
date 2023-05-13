@@ -1,6 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:uni_connect/domain/data_providers/local_data.dart';
+import 'package:uni_connect/ui/main/main_view_model.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
 import '../club_info/club_info_screen.dart';
@@ -13,23 +15,7 @@ class ClubsScreen extends StatefulWidget {
 }
 
 class _ClubsScreenState extends State<ClubsScreen> {
-  final List<String> clubImages = [
-    'assets/images/im_club_1.png',
-    'assets/images/im_club_2.png',
-    'assets/images/im_club_3.png',
-    'assets/images/im_club_4.png',
-    'assets/images/im_club_5.png',
-    'assets/images/im_club_6.png',
-  ];
-
-  final List<String> clubNames = [
-    'SDU Club',
-    'Music Club',
-    'Academic Club',
-    'Sport Club',
-    'Event Club',
-    'Vision',
-  ];
+  final clubs = LocalData.clubs;
 
   @override
   Widget build(BuildContext context) {
@@ -67,10 +53,50 @@ class _ClubsScreenState extends State<ClubsScreen> {
               ),
             ),
             const SizedBox(height: 22,),
+            // if(clubs != null && clubs.isNotEmpty) ListView.separated(
+            //   shrinkWrap: true,
+            //   physics: const NeverScrollableScrollPhysics(),
+            //   itemBuilder: (BuildContext context, int index) {
+            //     return GestureDetector(
+            //       onTap: (){
+            //         Navigator.of(context).push(
+            //           MaterialPageRoute(
+            //             builder: (BuildContext context) {
+            //               return ClubInfoScreen();
+            //             }
+            //           )
+            //         );
+            //       },
+            //       child: Container(
+            //         height: 70,
+            //         decoration: const BoxDecoration(
+            //           borderRadius: BorderRadius.all(Radius.circular(10)),
+            //           color: AppColors.black
+            //         ),
+            //         padding: const EdgeInsets.symmetric(horizontal: 13),
+            //         child: Row(
+            //           children: [
+            //             if(clubs[index].logo != null) Image.network(clubs[index].logo ?? '', height: 42, width: 42,),
+            //             const SizedBox(width: 10,),
+            //             Text(clubs[index].name ?? '', style: const TextStyle(
+            //               fontWeight: FontWeight.w500
+            //             ),),
+            //             const Spacer(),
+            //             SvgPicture.asset('assets/images/ic_chevron_right.svg')
+            //           ],
+            //         ),
+            //       ),
+            //     );
+            //   },
+            //   separatorBuilder: (BuildContext context, int index) {
+            //     return const SizedBox(height: 16,);
+            //   },
+            //   itemCount: club.length,
+            // ),
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) { 
+              itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: (){
                     Navigator.of(context).push(
@@ -90,9 +116,9 @@ class _ClubsScreenState extends State<ClubsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 13),
                     child: Row(
                       children: [
-                        Image.asset(clubImages[index], height: 42, width: 42,),
+                        Image.asset(clubs[index].imageUrl, height: 42, width: 42,),
                         const SizedBox(width: 10,),
-                        Text(clubNames[index], style: const TextStyle(
+                        Text(clubs[index].name, style: const TextStyle(
                           fontWeight: FontWeight.w500
                         ),),
                         const Spacer(),
@@ -105,8 +131,8 @@ class _ClubsScreenState extends State<ClubsScreen> {
               separatorBuilder: (BuildContext context, int index) {
                 return const SizedBox(height: 16,);
               },
-              itemCount: clubImages.length,
-            )
+              itemCount: clubs.length,
+            ),
           ],
         ),
       ),

@@ -34,10 +34,7 @@ class SpaceInfoScreen extends StatelessWidget {
           ),
           Container(
             width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
-
-            ),
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
                 Row(
@@ -74,6 +71,24 @@ class SpaceInfoScreen extends StatelessWidget {
                       ],
                     ),
                   ],
+                ),
+                const SizedBox(height: 10,),
+                Container(
+                  height: 30,
+                  decoration: const BoxDecoration(
+                    color: AppColors.mainColor,
+                    borderRadius: BorderRadius.all(Radius.circular(8))
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text('Suggest Post', style: TextStyle(
+                        fontSize: 12
+                      ),),
+                      SizedBox(width: 6,),
+                      Icon(Icons.post_add, color: Colors.white, size: 16,)
+                    ],
+                  ),
                 )
               ],
             ),

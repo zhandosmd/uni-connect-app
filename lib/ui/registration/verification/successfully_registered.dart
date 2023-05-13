@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../main/main_screen.dart';
-import '../theme/app_colors.dart';
+import '../../main/main_screen.dart';
+import '../../theme/app_colors.dart';
 
 class SuccessfullyRegistered extends StatelessWidget {
   const SuccessfullyRegistered({Key? key}) : super(key: key);

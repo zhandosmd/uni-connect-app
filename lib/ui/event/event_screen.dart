@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
+import '../../domain/entities/event.dart';
 import 'buy_a_ticket/buy_a_ticket.dart';
 
 class EventScreen extends StatelessWidget {
-  const EventScreen({Key? key}) : super(key: key);
+  final Event event;
+  const EventScreen({Key? key, required this.event}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

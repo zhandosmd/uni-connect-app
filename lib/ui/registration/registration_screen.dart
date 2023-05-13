@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/ui/registration/registration_view_model.dart';
-import 'package:uni_connect/ui/registration/successfully_registered.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -16,9 +15,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     final model = context.read<RegistrationViewModel>();
-    final isClosed = context.select((RegistrationViewModel vm) => vm.isClosed);
+    final hidePassword = context.select((RegistrationViewModel vm) => vm.hidePassword);
     final errorText = context.select((RegistrationViewModel vm) => vm.errorText);
     final isLoading = context.select((RegistrationViewModel vm) => vm.isLoading);
+    final emails = context.read<RegistrationViewModel>().emails;
+    final currentEmail = context.select((RegistrationViewModel vm) => vm.currentEmail);
 
     return Scaffold(
       body: SizedBox(
@@ -83,7 +84,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     ),
                                   ),
                                 ),
-                                const Text('@stu.sdu.edu.kz', style: TextStyle(color: Colors.white, fontSize: 12),)
+                                DropdownButton<String>(
+                                  value: currentEmail,
+                                  icon: const Icon(Icons.arrow_downward, color: Colors.white,),
+                                  iconSize: 16,
+                                  underline: Container(),
+                                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                                  onChanged: (String? value) => model.changeEmail(value ?? ''),
+                                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                  dropdownColor: AppColors.black,
+                                  items: emails.map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
                               ],
                             ),
                           ),
@@ -157,12 +175,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       hintText: 'Enter your password',
                                       hintStyle: TextStyle(color: AppColors.gray, fontSize: 12)
                                     ),
-                                    obscureText: isClosed,
+                                    obscureText: hidePassword,
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: model.changeIsClosed,
-                                  child: isClosed
+                                  onTap: model.changeHidePassword,
+                                  child: hidePassword
                                     ? SvgPicture.asset('assets/images/ic_eye_closed.svg')
                                     : SvgPicture.asset('assets/images/ic_eye.svg'),
                                 )
@@ -179,21 +197,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             ),),
                           ),
                         GestureDetector(
-                          onTap: () async {
-                            await model.validateSignUp();
-                            if(errorText != null) {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (BuildContext context) {
-                                    return const SuccessfullyRegistered();
-                                  })
-                              );
-                            }
-                          },
+                          onTap: () => model.pressRegister(context),
                           child: Container(
                             height: 48,
                             decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                color: AppColors.mainColor
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                              color: AppColors.mainColor
                             ),
                             child: Center(
                               child: isLoading

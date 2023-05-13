@@ -1,38 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_connect/domain/data_providers/local_data.dart';
 
 import '../space_info/space_info_screen.dart';
 import '../space_info/space_info_view_model.dart';
 import '../theme/app_colors.dart';
 
-class Space{
-  final String imageUrl;
-  final String name;
-  final String text;
-
-  Space({
-    required this.imageUrl,
-    required this.name,
-    required this.text,
-  });
-}
 
 class SpacesScreen extends StatelessWidget {
   SpacesScreen({Key? key}) : super(key: key);
-  final List<Space> spaces = [
-    Space(imageUrl: 'assets/images/image 3-2.png', name: 'ACM Community', text: '163 posts'),
-    Space(imageUrl: 'assets/images/image 3-3.png', name: 'Eat&Chat', text: '255 posts'),
-    Space(imageUrl: 'assets/images/image 3-4.png', name: 'Uni Activities', text: '766 posts'),
-    Space(imageUrl: 'assets/images/image 3-5.png', name: 'SDU Football League', text: '175 posts'),
-    Space(imageUrl: 'assets/images/image 3-6.png', name: 'Lost and Found SDU', text: '255 posts'),
-    Space(imageUrl: 'assets/images/image 3-7.png', name: 'Startup Garage', text: '1163 posts'),
-    Space(imageUrl: 'assets/images/image 3-8.png', name: 'Designers SDU', text: '163 posts'),
-    Space(imageUrl: 'assets/images/image 3-4.png', name: 'Eat&Chat', text: '255 posts'),
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final spaces = LocalData.spaces;
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Column(
@@ -118,7 +100,7 @@ class SpacesScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            spaces[index].text,
+                            spaces[index].postLength,
                             style: const TextStyle(
                               fontSize: 12,
                             ),

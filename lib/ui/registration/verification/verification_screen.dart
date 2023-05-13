@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
-import 'package:uni_connect/ui/auth/login_view_model.dart';
-import 'package:uni_connect/ui/main/main_screen.dart';
 import 'package:uni_connect/ui/registration/registration_screen.dart';
+import 'package:uni_connect/ui/registration/verification/verification_view_model.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class VerificationScreen extends StatefulWidget {
+  final String email;
+  final String slug;
+  const VerificationScreen({Key? key, required this.email, required this.slug}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<VerificationScreen> createState() => _VerificationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _VerificationScreenState extends State<VerificationScreen> {
+  final codeFormatter = MaskTextInputFormatter(
+    mask: '# # # #',
+    filter: { "#": RegExp(r'[0-9]') },
+    type: MaskAutoCompletionType.lazy
+  );
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<LoginViewModel>();
-
-    final isLoading = context.select((LoginViewModel vm) => vm.isLoading);
-    final hidePassword = context.select((LoginViewModel vm) => vm.hidePassword);
-    final isErrorEmail = context.select((LoginViewModel vm) => vm.isErrorEmail);
-    final isErrorPassword = context.select((LoginViewModel vm) => vm.isErrorPassword);
-    final emails = context.read<LoginViewModel>().emails;
-    final currentEmail = context.select((LoginViewModel vm) => vm.currentEmail);
+    final model = context.read<VerificationViewModel>();
+    final isErrorCode = context.select((VerificationViewModel vm) => vm.isErrorCode);
+    final isLoading = context.select((VerificationViewModel vm) => vm.isLoading);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -42,8 +43,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset('assets/images/UniConnect.png', height: 32, width: 142,),
-                        const Text('Login', style: TextStyle(color: Colors.white),)
+                        const Text('Verification', style: TextStyle(color: Colors.white),)
                       ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 16,
+                  top: 20,
+                  child: SafeArea(
+                    child: GestureDetector(
+                      onTap: Navigator.of(context).pop,
+                      child: const Icon(Icons.chevron_left)
                     ),
                   ),
                 )
@@ -57,8 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: MediaQuery.of(context).size.height-261 + 20,
                   width: MediaQuery.of(context).size.width,
                   decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(40)),
-                    color: AppColors.backgroundColor
+                      borderRadius: BorderRadius.all(Radius.circular(40)),
+                      color: AppColors.backgroundColor
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -66,49 +77,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 35,),
-                        const Text('Login to your personal account', style: TextStyle(
-                          fontSize: 12, color: Colors.white
+                        const Text('We have send verification code to your email', style: TextStyle(
+                            fontSize: 12, color: Colors.white
                         ),),
                         const SizedBox(height: 11,),
                         Container(
                           height: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                             color: AppColors.black,
-                            border: isErrorEmail ? Border.all(color: AppColors.red) : null
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 18),
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: TextField(
-                                    controller: model.emailController,
-                                    decoration: const InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: 'Enter your email',
-                                      hintStyle: TextStyle(color: AppColors.gray, fontSize: 12)
-                                    ),
-                                  ),
+                                  child: Text(widget.email, style: const TextStyle(color: Colors.white, fontSize: 12),)
                                 ),
-                                DropdownButton<String>(
-                                  value: currentEmail,
-                                  icon: const Icon(Icons.arrow_downward, color: Colors.white,),
-                                  iconSize: 16,
-                                  underline: Container(),
-                                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                                  onChanged: (String? value) => model.changeEmail(value ?? ''),
-                                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                  dropdownColor: AppColors.black,
-                                  items: emails.map<DropdownMenuItem<String>>((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(
-                                        value,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
+                                Text(widget.slug, style: const TextStyle(color: Colors.white, fontSize: 12))
                               ],
                             ),
                           ),
@@ -119,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: BoxDecoration(
                             borderRadius: const BorderRadius.all(Radius.circular(10)),
                             color: AppColors.black,
-                            border: isErrorPassword ? Border.all(color: AppColors.red) : null
+                            border: isErrorCode ? Border.all(color: AppColors.red) : null
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -127,33 +113,31 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 Expanded(
                                   child: TextField(
-                                    controller: model.passwordController,
+                                    inputFormatters: [codeFormatter],
+                                    controller: model.codeController,
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: 'Enter your password',
+                                      hintText: '_ _ _ _',
                                       hintStyle: TextStyle(color: AppColors.gray, fontSize: 12),
                                     ),
-                                    obscureText: hidePassword,
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: model.changeHidePassword,
-                                  child: hidePassword
-                                    ? SvgPicture.asset('assets/images/ic_eye_closed.svg')
-                                    : SvgPicture.asset('assets/images/ic_eye.svg'),
-                                )
                               ],
                             ),
                           ),
                         ),
                         const SizedBox(height: 11,),
                         GestureDetector(
-                          onTap: () => model.pressLogin(context),
+                          onTap: (){
+                            if(codeFormatter.getUnmaskedText().length == 4){
+                              model.onTapVerify(context, '${widget.email}${widget.slug}', codeFormatter.getUnmaskedText());
+                            }
+                          },
                           child: Container(
                             height: 48,
                             decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              color: AppColors.mainColor
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                color: AppColors.mainColor
                             ),
                             child: Center(
                               child: isLoading
@@ -163,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white,)
                                 )
                                 : const Text(
-                                  'Login', style: TextStyle(color: Colors.white),
+                                  'Verify', style: TextStyle(color: Colors.white),
                                 ),
                             ),
                           ),
@@ -172,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('Don’t have account? ', style: TextStyle(color: AppColors.gray, fontSize: 12),),
+                            const Text('Don’t receive the code? ', style: TextStyle(color: AppColors.gray, fontSize: 12),),
                             GestureDetector(
                               onTap: (){
                                 Navigator.of(context).push(
@@ -181,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   })
                                 );
                               },
-                              child: const Text('Create now', style: TextStyle(color: Colors.white, fontSize: 12),)
+                              child: const Text('Repeat code', style: TextStyle(color: Colors.white, fontSize: 12),)
                             )
                           ],
                         )

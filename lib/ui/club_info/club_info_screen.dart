@@ -2,19 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
+import '../../domain/entities/local_club.dart';
+
 class ClubInfoScreen extends StatelessWidget {
-  ClubInfoScreen({Key? key}) : super(key: key);
-  final List<String> gallery = [
-    'assets/images/im_club_info_gallery_1.png',
-    'assets/images/im_club_info_gallery_1.png',
-    'assets/images/im_club_info_gallery_1.png',
-    'assets/images/im_club_info_gallery_1.png',
-    'assets/images/im_club_info_gallery_1.png',
-    'assets/images/im_club_info_gallery_1.png',
-  ];
+  final LocalClub club;
+  ClubInfoScreen({Key? key, required this.club}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final gallery = club.gallery;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -25,7 +21,10 @@ class ClubInfoScreen extends StatelessWidget {
               Stack(
                 children: [
                   Image.asset(
-                    'assets/images/im_clubs_info.png',
+                    club.imageUrl,
+                    fit: BoxFit.fitWidth,
+                    height: 300,
+                    width: MediaQuery.of(context).size.width,
                   ),
                   SafeArea(
                     child: Padding(
@@ -36,10 +35,10 @@ class ClubInfoScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Positioned(
+                  Positioned(
                     bottom: 20,
                     left: 16,
-                    child: Text('Music Club', style: TextStyle(
+                    child: Text(club.name, style: const TextStyle(
                       fontWeight: FontWeight.w600, fontSize: 20
                     ),)
                   ),
@@ -109,13 +108,13 @@ class ClubInfoScreen extends StatelessWidget {
                       fontSize: 18, fontWeight: FontWeight.w700
                     ),),
                     const SizedBox(height: 15,),
-                    const Text('Orlean SDU', style: TextStyle(
+                    Text(club.name, style: const TextStyle(
                       fontWeight: FontWeight.w700
                     ),),
                     const SizedBox(height: 10,),
-                    const Text(
-                      'since 2023 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra nulla sapien, sed congue quam aliquam suscipit. Maecenas et nunc ut neque facilisis euismod. Vestibulum condimentum ligula et ligula cursus ultricies.',
-                      style: TextStyle(
+                    Text(
+                      club.description ?? '',
+                      style: const TextStyle(
                         fontSize: 12
                       ),
                     ),
@@ -127,7 +126,7 @@ class ClubInfoScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15,),
-              SizedBox(
+              if(gallery != null && gallery.isNotEmpty)SizedBox(
                 height: 172,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,

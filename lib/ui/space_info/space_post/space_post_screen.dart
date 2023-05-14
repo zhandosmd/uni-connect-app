@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
+import '../../../domain/entities/space.dart';
 import '../space_info_screen.dart';
 import '../space_info_view_model.dart';
 
@@ -20,7 +21,8 @@ class Comment{
 
 class SpacePostScreen extends StatelessWidget {
   final SpacePost spacePost;
-  SpacePostScreen({Key? key, required this.spacePost}) : super(key: key);
+  final Space space;
+  SpacePostScreen({Key? key, required this.spacePost, required this.space}) : super(key: key);
   final List<Comment> comments = [
     Comment(
       name: 'Pavel Durov',
@@ -102,7 +104,8 @@ class SpacePostScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 10,),
                     SpacePostWidget(
-                        spacePost: spacePost
+                      spacePost: spacePost,
+                      space: space,
                     ),
                     const SizedBox(height: 10,),
                     Row(

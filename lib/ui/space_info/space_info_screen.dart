@@ -1,18 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:uni_connect/ui/space_info/space_info_view_model.dart';
 import 'package:uni_connect/ui/space_info/space_post/space_post_screen.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
-class SpaceInfoScreen extends StatelessWidget {
-  const SpaceInfoScreen({Key? key}) : super(key: key);
+import '../../domain/entities/space.dart';
+
+class SpaceInfoScreen extends StatefulWidget {
+  final Space space;
+  const SpaceInfoScreen({Key? key, required this.space}) : super(key: key);
+
+  @override
+  State<SpaceInfoScreen> createState() => _SpaceInfoScreenState();
+}
+
+class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<SpaceInfoViewModel>().changeIsLoading(false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final spacePosts = context.select((SpaceInfoViewModel vm) => vm.spacePosts);
+    final isLoading = context.select((SpaceInfoViewModel vm) => vm.isLoading);
 
     return Scaffold(
-      body: Column(
+      body: isLoading
+      ? SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            CircularProgressIndicator.adaptive(backgroundColor: Colors.white,)
+          ],
+        ),
+      )
+      : Column(
         children: [
           Stack(
             children: [
@@ -41,13 +69,16 @@ class SpaceInfoScreen extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(999)),
-                      child: Image.asset('assets/images/im_club_1.png', height: 80, width: 80,)
+                      child: Image.asset(
+                        widget.space.imageUrl,
+                        height: 80,
+                        width: 80,)
                     ),
                     const SizedBox(width: 20,),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('acm community sdu', style: TextStyle(
+                        Text(widget.space.name, style: const TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w500
                         ),),
                         const SizedBox(height: 10,),
@@ -73,21 +104,24 @@ class SpaceInfoScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10,),
-                Container(
-                  height: 30,
-                  decoration: const BoxDecoration(
-                    color: AppColors.mainColor,
-                    borderRadius: BorderRadius.all(Radius.circular(8))
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text('Suggest Post', style: TextStyle(
-                        fontSize: 12
-                      ),),
-                      SizedBox(width: 6,),
-                      Icon(Icons.post_add, color: Colors.white, size: 16,)
-                    ],
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Container(
+                    height: 30,
+                    decoration: const BoxDecoration(
+                      color: AppColors.mainColor,
+                      borderRadius: BorderRadius.all(Radius.circular(8))
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text('Suggest Post', style: TextStyle(
+                          fontSize: 12
+                        ),),
+                        SizedBox(width: 6,),
+                        Icon(Icons.post_add, color: Colors.white, size: 16,)
+                      ],
+                    ),
                   ),
                 )
               ],
@@ -105,6 +139,7 @@ class SpaceInfoScreen extends StatelessWidget {
                           builder: (BuildContext context) {
                             return SpacePostScreen(
                               spacePost: spacePosts[index],
+                              space: widget.space,
                             );
                           }
                         )
@@ -112,6 +147,7 @@ class SpaceInfoScreen extends StatelessWidget {
                     },
                     child: SpacePostWidget(
                       spacePost: spacePosts[index],
+                      space: widget.space,
                     ),
                   );
                 },
@@ -130,10 +166,12 @@ class SpaceInfoScreen extends StatelessWidget {
 
 class SpacePostWidget extends StatelessWidget {
   final SpacePost spacePost;
+  final Space space;
 
   const SpacePostWidget({
     super.key,
     required this.spacePost,
+    required this.space,
   });
 
   @override
@@ -150,7 +188,7 @@ class SpacePostWidget extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(999)),
-                child: Image.asset('assets/images/im_club_1.png', height: 50, width: 50,)
+                child: Image.asset(space.imageUrl, height: 50, width: 50,)
               ),
               const SizedBox(width: 10,),
               Column(
@@ -191,19 +229,24 @@ class SpacePostWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(999)),
-                  color: AppColors.backgroundColor
-                ),
-                margin: const EdgeInsets.symmetric(horizontal: 5),
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                child: Row(
-                  children: [
-                    const Icon(Icons.reply, color: Colors.white,),
-                    const SizedBox(width: 5,),
-                    Text(spacePost.replyCounts)
-                  ],
+              GestureDetector(
+                onTap: (){
+                  Share.share("https://uniconnect.kz/post/142");
+                },
+                child: Container(
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(999)),
+                    color: AppColors.backgroundColor
+                  ),
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.reply, color: Colors.white,),
+                      const SizedBox(width: 5,),
+                      Text(spacePost.replyCounts)
+                    ],
+                  ),
                 ),
               ),
               const Spacer(),

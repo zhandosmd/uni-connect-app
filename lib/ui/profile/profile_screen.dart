@@ -5,6 +5,8 @@ import 'package:uni_connect/ui/profile/my_events/my_events_screen.dart';
 import 'package:uni_connect/ui/profile/profile_view_model.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
+import 'my_events/my_events_view_model.dart';
+
 class ProfileTab{
   final String icon;
   final String title;
@@ -23,7 +25,14 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final List<ProfileTab> profileTab = [
     ProfileTab(icon: 'assets/images/ic_space.svg', title: 'My Spaces'),
-    ProfileTab(icon: 'assets/images/ic_space.svg', title: 'My Events', nextScreen: const MyEventsScreen()),
+    ProfileTab(
+      icon: 'assets/images/ic_space.svg',
+      title: 'My Events',
+      nextScreen: ChangeNotifierProvider(
+        create: (_) => MyEventsViewModel(),
+        child: const MyEventsScreen()
+      )
+    ),
     ProfileTab(icon: 'assets/images/ic_tickets.svg', title: 'My Tickets'),
     ProfileTab(icon: 'assets/images/ic_favorite.svg', title: 'My Favorites'),
     ProfileTab(icon: 'assets/images/ic_info.svg', title: 'About App'),

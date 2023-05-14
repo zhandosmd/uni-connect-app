@@ -71,7 +71,7 @@ class SpacesScreen extends StatelessWidget {
                         builder: (BuildContext context) {
                           return ChangeNotifierProvider(
                             create: (_) => SpaceInfoViewModel(),
-                            child: const SpaceInfoScreen()
+                            child: SpaceInfoScreen(space: spaces[index],)
                           );
                         }
                       )

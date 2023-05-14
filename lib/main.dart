@@ -15,8 +15,6 @@ void main() {
         ChangeNotifierProvider(create: (_) => RegistrationViewModel()),
         ChangeNotifierProvider(create: (_) => MainViewModel()),
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
-
-        ChangeNotifierProvider(create: (_) => MyEventsViewModel()),
       ],
       child: const MyApp(),
     )

@@ -102,7 +102,7 @@ class _ClubsScreenState extends State<ClubsScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (BuildContext context) {
-                          return ClubInfoScreen();
+                          return ClubInfoScreen(club: clubs[index],);
                         }
                       )
                     );

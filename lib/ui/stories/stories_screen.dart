@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:story_view/story_view.dart';
 
-import '../home/home_screen.dart';
+import '../../domain/entities/story.dart';
 
 class StoriesScreen extends StatelessWidget {
   final List<Story> stories;
@@ -13,10 +13,11 @@ class StoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<StoryItem> storyItems = stories.mapIndexed((currentIndex, story) {
-      return StoryItem.pageProviderImage(
-        AssetImage(story.image),
+      return StoryItem.pageImage(
+        url: stories[currentIndex].image ?? '',
         shown: currentIndex < index,
-        caption: story.title
+        caption: 'No Title',
+        controller: controller
       );
     }).toList();
 

@@ -24,7 +24,7 @@ class SpaceInfoViewModel extends ChangeNotifier{
   bool isLoading = true;
 
   void changeIsLoading(bool isLoading) async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(milliseconds: 100));
     this.isLoading = isLoading;
     notifyListeners();
   }

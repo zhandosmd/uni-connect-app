@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
-abstract class LoadingDialog{
+abstract class LoadingDialog {
   static Future<void> showLoadingDialog(BuildContext context) async {
-
     showDialog(
         barrierDismissible: false,
         context: context,
@@ -13,24 +12,26 @@ abstract class LoadingDialog{
             child: Container(
               height: 100,
               width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50)
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(50)),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    CircularProgressIndicator.adaptive(backgroundColor: Colors.white,),
-                    SizedBox(height: 20,),
+                  children: [
+                    CircularProgressIndicator.adaptive(
+                      backgroundColor: Colors.white,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Text('Publishing event')
                   ],
                 ),
               ),
             ),
           );
-        }
-    );
+        });
     await Future.delayed(const Duration(seconds: 3));
     Navigator.of(context).pop();
   }

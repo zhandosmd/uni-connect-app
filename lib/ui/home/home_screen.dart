@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/ui/event/event_view_model.dart';
+import 'package:uni_connect/ui/home/home_view_model.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
 import '../../domain/data_providers/local_data.dart';
-import '../../domain/entities/event.dart';
 import '../club_info/club_info_screen.dart';
 import '../event/event_screen.dart';
 import '../stories/stories_screen.dart';
@@ -18,24 +18,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final stories = LocalData.stories;
-  final clubs = LocalData.clubs;
-  final events = LocalData.events;
-  final spaces = LocalData.spaces;
-  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await Future.delayed(const Duration(seconds: 2));
-      isLoading = false;
-      setState(() {});
+      await context.read<HomeViewModel>().init();
     });
   }
 
+  final clubs = LocalData.clubs;
+  final events = LocalData.events;
+  final spaces = LocalData.spaces;
+
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.select((HomeViewModel vm) => vm.isLoading);
+    final stories = context.select((HomeViewModel vm) => vm.stories);
 
     return isLoading
       ? const Expanded(
@@ -53,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: SvgPicture.asset("assets/images/ic_logo.svg"),
               ),
               const SizedBox(height: 16,),
-              SizedBox(
+              if(stories != null && stories.isNotEmpty) SizedBox(
                 height: 80,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
@@ -93,13 +92,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             ClipRRect(
                               borderRadius: const BorderRadius.all(Radius.circular(8)),
-                              child: Image.asset(stories[index].image, width: 100, fit: BoxFit.cover,)
+                              child: Image.network(stories[index].image ?? '', width: 100, fit: BoxFit.cover,)
                             ),
-                            Positioned(
+                            const Positioned(
                               left: 8,
                               right: 8,
                               bottom: 8,
-                              child: Text(stories[index].title, style: const TextStyle(fontSize: 12),)
+                              child: Text('No Title', style: TextStyle(fontSize: 12),)
                             )
                           ],
                         ),
@@ -311,9 +310,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class Story{
-  final String title;
-  final String image;
-
-  Story({required this.title, required this.image});
-}
+// class Story{
+//   final String title;
+//   final String image;
+//
+//   Story({required this.title, required this.image});
+// }

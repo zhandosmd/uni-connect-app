@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
+import '../../ui/home/home_screen.dart';
 import '../data_providers/session_data_provider.dart';
 import '../entities/auth_response.dart';
 import '../entities/club.dart';
+import '../entities/story.dart';
 import '../entities/user.dart';
 
-class ApiClient{
+class ApiClient {
   final String _host = 'https://fine-jade-cobra-toga.cyclic.app';
   final _dioClient = Dio();
 
@@ -16,20 +20,15 @@ class ApiClient{
     AuthResponse? authResponse;
 
     try {
-      Response response = await _dioClient.post(
-          '$_host/users/login',
-          data: {
-            'email': email,
-            'password': password,
-          },
-          options: Options(
-            validateStatus: (status) {
-              return (status ?? 0) < 500;
-            },
-          )
-      );
+      Response response = await _dioClient.post('$_host/users/login', data: {
+        'email': email,
+        'password': password,
+      }, options: Options(
+        validateStatus: (status) {
+          return (status ?? 0) < 500;
+        },
+      ));
       authResponse = AuthResponse.fromJson(response.data);
-
     } on DioError catch (e) {
       print("DioError login: ${e.message}");
     }
@@ -55,7 +54,6 @@ class ApiClient{
         },
       );
       authResponse = AuthResponse.fromJson(response.data);
-
     } on DioError catch (e) {
       print("DioError register: ${e.message}");
     }
@@ -75,7 +73,6 @@ class ApiClient{
         },
       );
       authResponse = AuthResponse.fromJson(response.data);
-
     } on DioError catch (e) {
       print("DioError repeatCode: ${e.message}");
     }
@@ -98,7 +95,6 @@ class ApiClient{
         },
       );
       authResponse = AuthResponse.fromJson(response.data);
-
     } on DioError catch (e) {
       print("DioError verifyCode: ${e.message}");
     }
@@ -120,7 +116,6 @@ class ApiClient{
         }),
       );
       user = User.fromJson(response.data["user"]);
-
     } on DioError catch (e) {
       print("DioError getUser: ${e.message}");
     }
@@ -140,13 +135,82 @@ class ApiClient{
           'Authorization': "Bearer $jwt",
         }),
       );
-      clubs = List<Club>.from(response.data["data"].map((x) => Club.fromJson(x)));
-
+      clubs =
+          List<Club>.from(response.data["data"].map((x) => Club.fromJson(x)));
     } on DioError catch (e) {
       print("DioError getClubs: ${e.message}");
     }
     print('user: ${clubs?.length}');
 
     return clubs;
+  }
+
+  Future<List<Story>?> getStories() async {
+    List<Story>? stories;
+    final jwt = await SessionDataProvider().getSessionId();
+
+    try {
+      Response response = await _dioClient.get(
+        '$_host/stories/all',
+        options: Options(headers: {
+          'Authorization': "Bearer $jwt",
+        }),
+      );
+      stories =
+          List<Story>.from(response.data["data"].map((x) => Story.fromJson(x)));
+    } on DioError catch (e) {
+      print("DioError getClubs: ${e.message}");
+    }
+    print('user: ${stories?.length}');
+
+    return stories;
+  }
+
+  Future<AuthResponse?> createEvent({
+    String? title,
+    String? date,
+    String? time,
+    String? description,
+    String? clubId,
+    String? cardNumber,
+    String? price,
+    String? ticketCount,
+    List<File>? images,
+  }) async {
+    AuthResponse? authResponse;
+    final jwt = await SessionDataProvider().getSessionId();
+    FormData formData = FormData.fromMap({
+      'title': title,
+      'date': date, // 10.05.2002
+      'time': time, // 10:35
+      'description': description,
+      'clubId': clubId,
+      'cardNumber': cardNumber,
+      'price': price,
+      'ticketCount': ticketCount,
+      'price': price,
+    });
+    for (File image in (images ?? [])) {
+      formData.files.addAll([
+        MapEntry(
+            "images",
+            await MultipartFile.fromFile(image.path,
+                filename: image.path.split('/').last)),
+      ]);
+    }
+
+    try {
+      Response response = await _dioClient.post(
+        '$_host/event/create',
+        data: formData,
+        options: Options(headers: {
+          'Authorization': "Bearer $jwt",
+        }),
+      );
+      authResponse = AuthResponse.fromJson(response.data);
+    } on DioError catch (e) {
+      print("DioError createEvent: ${e.message}");
+    }
+    return authResponse;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uni_connect/domain/data_providers/session_data_provider.dart';
 
 import '../../../../common_widgets/floating_button_widget.dart';
 
@@ -17,10 +18,13 @@ class SuccessfullyCreatedScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset('assets/images/ic_succesfully_created.svg'),
-              const SizedBox(height: 45,),
-              const Text('Event created successfully', style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.w700
-              ),)
+              const SizedBox(
+                height: 45,
+              ),
+              const Text(
+                'Event created successfully',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              )
             ],
           ),
         ),
@@ -29,7 +33,8 @@ class SuccessfullyCreatedScreen extends StatelessWidget {
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: FloatingButtonWidget(
-          onTap: () {
+          onTap: () async {
+            print(await SessionDataProvider().getSessionId());
             Navigator.pop(context);
             Navigator.pop(context);
             Navigator.pop(context);

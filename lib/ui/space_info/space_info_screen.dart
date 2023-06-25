@@ -40,73 +40,76 @@ class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
           ],
         ),
       )
-      : Column(
-        children: [
-          Stack(
-            children: [
-              Image.asset(
-                'assets/images/im_kz_acm_community.jpeg',
-                height: 130, width: MediaQuery.of(context).size.width,
-                fit: BoxFit.cover,
-              ),
-              Positioned(
-                left: 16,
-                child: SafeArea(
-                  child: GestureDetector(
-                    onTap: Navigator.of(context).pop,
-                    child: const Icon(Icons.chevron_left, color: Colors.black,)
+      : SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 130,
+              child: Stack(
+                children: [
+                  Image.asset(
+                    'assets/images/im_kz_acm_community.jpeg',
+                    height: 130, width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
                   ),
-                ),
+                  Positioned(
+                    left: 16,
+                    child: SafeArea(
+                      child: GestureDetector(
+                        onTap: Navigator.of(context).pop,
+                        child: const Icon(Icons.chevron_left, color: Colors.black,)
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(999)),
-                      child: Image.asset(
-                        widget.space.imageUrl,
-                        height: 80,
-                        width: 80,)
-                    ),
-                    const SizedBox(width: 20,),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(widget.space.name, style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w500
-                        ),),
-                        const SizedBox(height: 10,),
-                        Row(
-                          children: const [
-                            Icon(Icons.done_all, color: Colors.grey, size: 18,),
-                            SizedBox(width: 10,),
-                            Text('You subscribed', style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey,
-                            ),),
-                            SizedBox(width: 5,),
-                            Text('·', style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey,
-                            ),),
-                            SizedBox(width: 5,),
-                            Text('6.3K Subscribers', style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey,
-                            ),),
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Container(
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+               child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(999)),
+                        child: Image.asset(
+                          widget.space.imageUrl,
+                          height: 80,
+                          width: 80,)
+                      ),
+                      const SizedBox(width: 20,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.space.name, style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500
+                          ),),
+                          const SizedBox(height: 10,),
+                          Row(
+                            children: const [
+                              Icon(Icons.done_all, color: Colors.grey, size: 18,),
+                              SizedBox(width: 10,),
+                              Text('You subscribed', style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey,
+                              ),),
+                              SizedBox(width: 5,),
+                              Text('·', style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey,
+                              ),),
+                              SizedBox(width: 5,),
+                              Text('6.3K Subscribers', style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey,
+                              ),),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10,),
+                  Container(
                     height: 30,
                     decoration: const BoxDecoration(
                       color: AppColors.mainColor,
@@ -122,43 +125,41 @@ class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
                         Icon(Icons.post_add, color: Colors.white, size: 16,)
                       ],
                     ),
+                  )
+                ],
+              ),
+            ),
+            ListView.separated(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: (){
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return SpacePostScreen(
+                            spacePost: spacePosts[index],
+                            space: widget.space,
+                          );
+                        }
+                      )
+                    );
+                  },
+                  child: SpacePostWidget(
+                    spacePost: spacePosts[index],
+                    space: widget.space,
                   ),
-                )
-              ],
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return const SizedBox(height: 10);
+              },
+              itemCount: spacePosts.length,
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ListView.separated(
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: (){
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return SpacePostScreen(
-                              spacePost: spacePosts[index],
-                              space: widget.space,
-                            );
-                          }
-                        )
-                      );
-                    },
-                    child: SpacePostWidget(
-                      spacePost: spacePosts[index],
-                      space: widget.space,
-                    ),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return const SizedBox(height: 10);
-                },
-                itemCount: spacePosts.length,
-              )
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

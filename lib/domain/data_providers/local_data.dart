@@ -5,11 +5,11 @@ import '../entities/local_club.dart';
 import '../entities/space.dart';
 
 abstract class LocalData{
-  static final List<Story> stories = [
-    Story(title: 'Mountain Trip', image: 'assets/images/im_stories_1.jpeg'),
-    Story(title: 'Ice Skating', image: 'assets/images/im_stories_2.jpeg'),
-    Story(title: 'Horse Riding', image: 'assets/images/im_stories_3.jpeg'),
-  ];
+  // static final List<Story> stories = [
+  //   Story(title: 'Mountain Trip', image: 'assets/images/im_stories_1.jpeg'),
+  //   Story(title: 'Ice Skating', image: 'assets/images/im_stories_2.jpeg'),
+  //   Story(title: 'Horse Riding', image: 'assets/images/im_stories_3.jpeg'),
+  // ];
 
   static final List<Event> events = [
     Event(title: 'FC "Кайрат" - FC "Актобе"', place: 'Almaty Arena', date: '14.05.2023, at 18:30', createdDate: '10 march, 17:47', imageUrl: 'assets/images/im_events_4.jpg'),

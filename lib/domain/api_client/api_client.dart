@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:uni_connect/domain/entities/space.dart';
 
 import '../../ui/home/home_screen.dart';
 import '../data_providers/session_data_provider.dart';
@@ -10,7 +11,7 @@ import '../entities/story.dart';
 import '../entities/user.dart';
 
 class ApiClient {
-  final String _host = 'https://fine-jade-cobra-toga.cyclic.app';
+  final String _host = 'https://uniconnect1.onrender.com';
   final _dioClient = Dio();
 
   Future<AuthResponse?> login({
@@ -188,7 +189,6 @@ class ApiClient {
       'cardNumber': cardNumber,
       'price': price,
       'ticketCount': ticketCount,
-      'price': price,
     });
     for (File image in (images ?? [])) {
       formData.files.addAll([
@@ -210,6 +210,65 @@ class ApiClient {
       authResponse = AuthResponse.fromJson(response.data);
     } on DioError catch (e) {
       print("DioError createEvent: ${e.message}");
+    }
+    return authResponse;
+  }
+
+  Future<List<Space>?> getSpaces() async {
+    List<Space>? spaces;
+    final jwt = await SessionDataProvider().getSessionId();
+
+    try {
+      Response response = await _dioClient.get(
+        '$_host/space/all',
+        options: Options(headers: {
+          'Authorization': "Bearer $jwt",
+        }),
+      );
+      spaces = List<Space>.from(response.data.map((x) => Space.fromJson(x)));
+    } on DioError catch (e) {
+      print("DioError getSpaces: ${e.message}");
+    }
+    print('user: ${spaces?.length}');
+
+    return spaces;
+  }
+
+  Future<AuthResponse?> createSpace({
+    String? title,
+    String? description,
+    File? image,
+  }) async {
+    AuthResponse? authResponse;
+    final jwt = await SessionDataProvider().getSessionId();
+
+    FormData formData = FormData.fromMap({
+      'title': title,
+      'description': description,
+    });
+    if (image != null) {
+      formData.files.add(
+        MapEntry(
+          "image",
+          await MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+          ),
+        ),
+      );
+    }
+
+    try {
+      Response response = await _dioClient.post(
+        '$_host/space/create',
+        data: formData,
+        options: Options(headers: {
+          'Authorization': "Bearer $jwt",
+        }),
+      );
+      authResponse = AuthResponse.fromJson(response.data);
+    } on DioError catch (e) {
+      print("DioError createSpace: ${e.message}");
     }
     return authResponse;
   }

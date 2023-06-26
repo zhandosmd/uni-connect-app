@@ -8,7 +8,9 @@ import 'package:uni_connect/ui/theme/app_colors.dart';
 import '../../domain/entities/space.dart';
 
 class SpaceInfoScreen extends StatefulWidget {
+  // final SpaceLocal space;
   final Space space;
+
   const SpaceInfoScreen({Key? key, required this.space}) : super(key: key);
 
   @override
@@ -26,141 +28,189 @@ class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<SpaceInfoViewModel>();
     final spacePosts = context.select((SpaceInfoViewModel vm) => vm.spacePosts);
     final isLoading = context.select((SpaceInfoViewModel vm) => vm.isLoading);
 
     return Scaffold(
       body: isLoading
-      ? SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            CircularProgressIndicator.adaptive(backgroundColor: Colors.white,)
-          ],
-        ),
-      )
-      : SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 130,
-              child: Stack(
-                children: [
-                  Image.asset(
-                    'assets/images/im_kz_acm_community.jpeg',
-                    height: 130, width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
-                  ),
-                  Positioned(
-                    left: 16,
-                    child: SafeArea(
-                      child: GestureDetector(
-                        onTap: Navigator.of(context).pop,
-                        child: const Icon(Icons.chevron_left, color: Colors.black,)
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
+          ? SizedBox(
               width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-               child: Column(
-                mainAxisSize: MainAxisSize.min,
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(999)),
-                        child: Image.asset(
-                          widget.space.imageUrl,
-                          height: 80,
-                          width: 80,)
-                      ),
-                      const SizedBox(width: 20,),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(widget.space.name, style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w500
-                          ),),
-                          const SizedBox(height: 10,),
-                          Row(
-                            children: const [
-                              Icon(Icons.done_all, color: Colors.grey, size: 18,),
-                              SizedBox(width: 10,),
-                              Text('You subscribed', style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey,
-                              ),),
-                              SizedBox(width: 5,),
-                              Text('·', style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey,
-                              ),),
-                              SizedBox(width: 5,),
-                              Text('6.3K Subscribers', style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey,
-                              ),),
-                            ],
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10,),
-                  Container(
-                    height: 30,
-                    decoration: const BoxDecoration(
-                      color: AppColors.mainColor,
-                      borderRadius: BorderRadius.all(Radius.circular(8))
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text('Suggest Post', style: TextStyle(
-                          fontSize: 12
-                        ),),
-                        SizedBox(width: 6,),
-                        Icon(Icons.post_add, color: Colors.white, size: 16,)
-                      ],
-                    ),
+                  CircularProgressIndicator.adaptive(
+                    backgroundColor: Colors.white,
                   )
                 ],
               ),
-            ),
-            ListView.separated(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: (){
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return SpacePostScreen(
-                            spacePost: spacePosts[index],
-                            space: widget.space,
-                          );
-                        }
-                      )
-                    );
-                  },
-                  child: SpacePostWidget(
-                    spacePost: spacePosts[index],
-                    space: widget.space,
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 130,
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          'assets/images/im_kz_acm_community.jpeg',
+                          height: 130,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          left: 16,
+                          child: SafeArea(
+                            child: GestureDetector(
+                                onTap: Navigator.of(context).pop,
+                                child: const Icon(
+                                  Icons.chevron_left,
+                                  color: Colors.black,
+                                )),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(height: 10);
-              },
-              itemCount: spacePosts.length,
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            ClipRRect(
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(999)),
+                                child: Image.network(
+                                  widget.space.image ?? '',
+                                  height: 80,
+                                  width: 80,
+                                )),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.space.title ?? '',
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.done_all,
+                                      color: Colors.grey,
+                                      size: 18,
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      'You subscribed',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '·',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '6.3K Subscribers',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        GestureDetector(
+                          onTap: () => model.showCreatePost(context),
+                          child: Container(
+                            height: 30,
+                            decoration: const BoxDecoration(
+                                color: AppColors.mainColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Suggest Post',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                SizedBox(
+                                  width: 6,
+                                ),
+                                Icon(
+                                  Icons.post_add,
+                                  color: Colors.white,
+                                  size: 16,
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) {
+                            return SpacePostScreen(
+                              spacePost: spacePosts[index],
+                              space: widget.space,
+                            );
+                          }));
+                        },
+                        child: SpacePostWidget(
+                          spacePost: spacePosts[index],
+                          space: widget.space,
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(height: 10);
+                    },
+                    itemCount: spacePosts.length,
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -179,72 +229,96 @@ class SpacePostWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.black,
-        borderRadius: BorderRadius.all(Radius.circular(10))
-      ),
+          color: AppColors.black,
+          borderRadius: BorderRadius.all(Radius.circular(10))),
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Column(
         children: [
           Row(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(999)),
-                child: Image.asset(space.imageUrl, height: 50, width: 50,)
+                  borderRadius: const BorderRadius.all(Radius.circular(999)),
+                  child: Image.network(
+                    space.image ?? '',
+                    height: 50,
+                    width: 50,
+                  )),
+              const SizedBox(
+                width: 10,
               ),
-              const SizedBox(width: 10,),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('acm community sdu', style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w500
-                  ),),
-                  SizedBox(height: 5,),
-                  Text('10 may, 10:15', style: TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.gray
-                  ),),
+                children: [
+                  Text(
+                    'acm community sdu',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    '10 may, 10:15',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.gray),
+                  ),
                 ],
               )
             ],
           ),
-          const SizedBox(height: 2,),
-          Text(
-            spacePost.text
+          const SizedBox(
+            height: 2,
           ),
-          const SizedBox(height: 2,),
+          Text(spacePost.text),
+          const SizedBox(
+            height: 2,
+          ),
           Image.asset(spacePost.imageUrl),
-          const SizedBox(height: 5,),
+          const SizedBox(
+            height: 5,
+          ),
           Row(
             children: [
               Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(999)),
-                  color: AppColors.backgroundColor
-                ),
+                    borderRadius: BorderRadius.all(Radius.circular(999)),
+                    color: AppColors.backgroundColor),
                 margin: const EdgeInsets.symmetric(horizontal: 5),
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 child: Row(
                   children: [
-                    const Icon(Icons.favorite, color: AppColors.red,),
-                    const SizedBox(width: 5,),
+                    const Icon(
+                      Icons.favorite,
+                      color: AppColors.red,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
                     Text(spacePost.likeCounts)
                   ],
                 ),
               ),
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   Share.share("https://uniconnect.kz/post/142");
                 },
                 child: Container(
                   decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(999)),
-                    color: AppColors.backgroundColor
-                  ),
+                      borderRadius: BorderRadius.all(Radius.circular(999)),
+                      color: AppColors.backgroundColor),
                   margin: const EdgeInsets.symmetric(horizontal: 5),
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                   child: Row(
                     children: [
-                      const Icon(Icons.reply, color: Colors.white,),
-                      const SizedBox(width: 5,),
+                      const Icon(
+                        Icons.reply,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
                       Text(spacePost.replyCounts)
                     ],
                   ),
@@ -253,22 +327,28 @@ class SpacePostWidget extends StatelessWidget {
               const Spacer(),
               Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(999)),
-                  color: AppColors.backgroundColor
-                ),
+                    borderRadius: BorderRadius.all(Radius.circular(999)),
+                    color: AppColors.backgroundColor),
                 margin: const EdgeInsets.symmetric(horizontal: 5),
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 child: Row(
                   children: [
-                    const Icon(Icons.remove_red_eye_outlined, color: Colors.white,),
-                    const SizedBox(width: 5,),
+                    const Icon(
+                      Icons.remove_red_eye_outlined,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
                     Text(spacePost.viewCounts)
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(
+            height: 5,
+          ),
         ],
       ),
     );

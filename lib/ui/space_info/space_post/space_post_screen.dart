@@ -5,7 +5,7 @@ import '../../../domain/entities/space.dart';
 import '../space_info_screen.dart';
 import '../space_info_view_model.dart';
 
-class Comment{
+class Comment {
   final String name;
   final String date;
   final String comment;
@@ -22,7 +22,9 @@ class Comment{
 class SpacePostScreen extends StatelessWidget {
   final SpacePost spacePost;
   final Space space;
-  SpacePostScreen({Key? key, required this.spacePost, required this.space}) : super(key: key);
+
+  SpacePostScreen({Key? key, required this.spacePost, required this.space})
+      : super(key: key);
   final List<Comment> comments = [
     Comment(
       name: 'Pavel Durov',
@@ -80,47 +82,71 @@ class SpacePostScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: Navigator.of(context).pop,
-                    child: const Icon(Icons.chevron_left, color: Colors.white,)
+                      onTap: Navigator.of(context).pop,
+                      child: const Icon(
+                        Icons.chevron_left,
+                        color: Colors.white,
+                      )),
+                  const Text(
+                    'Post',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                   ),
-                  const Text('Post', style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.w500
-                  ),),
-                  const SizedBox(width: 24,)
+                  const SizedBox(
+                    width: 24,
+                  )
                 ],
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     SpacePostWidget(
                       spacePost: spacePost,
                       space: space,
                     ),
-                    const SizedBox(height: 10,),
-                    Row(
-                      children: const [
-                        SizedBox(width: 16,),
-                        Text('10 Comments', style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500
-                        ),),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Row(
+                      children: [
+                        SizedBox(
+                          width: 16,
+                        ),
+                        Text(
+                          '10 Comments',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
                         Spacer(),
                         Text('Interesting at first'),
-                        Icon(Icons.arrow_drop_down, color: Colors.white,),
-                        SizedBox(width: 16,),
+                        Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          width: 16,
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: ListView.separated(
@@ -132,12 +158,16 @@ class SpacePostScreen extends StatelessWidget {
                           );
                         },
                         separatorBuilder: (BuildContext context, int index) {
-                          return const SizedBox(height: 15,);
+                          return const SizedBox(
+                            height: 15,
+                          );
                         },
                         itemCount: comments.length,
                       ),
                     ),
-                    const SizedBox(height: 80,),
+                    const SizedBox(
+                      height: 80,
+                    ),
                   ],
                 ),
               ),
@@ -151,9 +181,8 @@ class SpacePostScreen extends StatelessWidget {
             child: Container(
               height: 40,
               decoration: BoxDecoration(
-                color: const Color.fromRGBO(208, 208, 208, 1.0),
-                borderRadius: BorderRadius.circular(999)
-              ),
+                  color: const Color.fromRGBO(208, 208, 208, 1.0),
+                  borderRadius: BorderRadius.circular(999)),
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: const Center(
                 child: TextField(
@@ -161,22 +190,28 @@ class SpacePostScreen extends StatelessWidget {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                   ),
                   style: TextStyle(color: Colors.black, fontSize: 14),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 5,),
+          const SizedBox(
+            width: 5,
+          ),
           Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.mainColor,
-              borderRadius: BorderRadius.circular(999)
+                color: AppColors.mainColor,
+                borderRadius: BorderRadius.circular(999)),
+            child: const Icon(
+              Icons.add_comment,
+              color: Colors.white,
+              size: 18,
             ),
-            child: const Icon(Icons.add_comment, color: Colors.white, size: 18,),
           )
         ],
       ),
@@ -187,35 +222,48 @@ class SpacePostScreen extends StatelessWidget {
 
 class PostCommentWidget extends StatelessWidget {
   final Comment comment;
-  const PostCommentWidget({
-    super.key,
-    required this.comment
-  });
+  const PostCommentWidget({super.key, required this.comment});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(999)),
-          child: Image.asset(comment.imageUrl, height: 50, width: 50, fit: BoxFit.cover,)
+            borderRadius: const BorderRadius.all(Radius.circular(999)),
+            child: Image.asset(
+              comment.imageUrl,
+              height: 50,
+              width: 50,
+              fit: BoxFit.cover,
+            )),
+        const SizedBox(
+          width: 10,
         ),
-        const SizedBox(width: 10,),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(comment.name, style: const TextStyle(
-                fontSize: 12,
-              ),),
-              const SizedBox(height: 5,),
-              Text(comment.comment, style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w500
-              ),),
-              const SizedBox(height: 5,),
-              Text(comment.date, style: const TextStyle(
-                fontSize: 12, color: Colors.grey
-              ),),
+              Text(
+                comment.name,
+                style: const TextStyle(
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                comment.comment,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                comment.date,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
             ],
           ),
         )

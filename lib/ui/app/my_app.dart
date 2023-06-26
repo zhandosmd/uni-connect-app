@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uni_connect/domain/data_providers/session_data_provider.dart';
 import 'package:uni_connect/ui/main/main_screen.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 

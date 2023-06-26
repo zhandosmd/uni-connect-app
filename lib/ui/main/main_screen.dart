@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_connect/domain/data_providers/session_data_provider.dart';
 import 'package:uni_connect/ui/home/home_screen.dart';
 import 'package:uni_connect/ui/main/main_view_model.dart';
 import 'package:uni_connect/ui/profile/profile_view_model.dart';
@@ -20,7 +21,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -29,15 +29,17 @@ class _MainScreenState extends State<MainScreen> {
       context.read<MainViewModel>().getClubs();
     });
   }
+
   int selectedTab = 0;
 
-  void changeSelectedTab(int index){
+  void changeSelectedTab(int index) async {
+    print(await SessionDataProvider().getSessionId());
     selectedTab = index;
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
@@ -47,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
             child: IndexedStack(
               // хранить все виджеты на памяти тем самым сохраняя стейт
               index: selectedTab,
-              children: [
+              children: const [
                 HomeScreen(),
                 SpacesScreen(),
                 ClubsScreen(),
@@ -72,17 +74,14 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('assets/images/ic_spaces.svg'),
-            label: 'Space'
-          ),
+              icon: SvgPicture.asset('assets/images/ic_spaces.svg'),
+              label: 'Space'),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('assets/images/ic_clubs.svg'),
-            label: 'Clubs'
-          ),
+              icon: SvgPicture.asset('assets/images/ic_clubs.svg'),
+              label: 'Clubs'),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('assets/images/ic_profile.svg'),
-            label: 'Profile'
-          )
+              icon: SvgPicture.asset('assets/images/ic_profile.svg'),
+              label: 'Profile')
         ],
       ),
     );

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:uni_connect/domain/entities/space_details.dart';
 import 'package:uni_connect/ui/space_info/space_info_view_model.dart';
 import 'package:uni_connect/ui/space_info/space_post/space_post_screen.dart';
+import 'package:uni_connect/ui/space_info/widgets/space_post_widget.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
 import '../../domain/entities/space.dart';
@@ -22,15 +24,17 @@ class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<SpaceInfoViewModel>().changeIsLoading(false);
+      context.read<SpaceInfoViewModel>().getSpaceDetails(widget.space.id);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final model = context.read<SpaceInfoViewModel>();
-    final spacePosts = context.select((SpaceInfoViewModel vm) => vm.spacePosts);
+    // final spacePosts = context.select((SpaceInfoViewModel vm) => vm.spacePosts);
     final isLoading = context.select((SpaceInfoViewModel vm) => vm.isLoading);
+    final spaceDetails =
+        context.select((SpaceInfoViewModel vm) => vm.spaceDetails);
 
     return Scaffold(
       body: isLoading
@@ -192,165 +196,24 @@ class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) {
                             return SpacePostScreen(
-                              spacePost: spacePosts[index],
-                              space: widget.space,
-                            );
+                                spaceDetails: spaceDetails,
+                                postId: spaceDetails?.posts?[index].id);
                           }));
                         },
                         child: SpacePostWidget(
-                          spacePost: spacePosts[index],
-                          space: widget.space,
+                          spaceDetails: spaceDetails,
+                          post: spaceDetails?.posts?[index],
                         ),
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const SizedBox(height: 10);
                     },
-                    itemCount: spacePosts.length,
+                    itemCount: spaceDetails?.posts?.length ?? 0,
                   ),
                 ],
               ),
             ),
-    );
-  }
-}
-
-class SpacePostWidget extends StatelessWidget {
-  final SpacePost spacePost;
-  final Space space;
-
-  const SpacePostWidget({
-    super.key,
-    required this.spacePost,
-    required this.space,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          color: AppColors.black,
-          borderRadius: BorderRadius.all(Radius.circular(10))),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(999)),
-                  child: Image.network(
-                    space.image ?? '',
-                    height: 50,
-                    width: 50,
-                  )),
-              const SizedBox(
-                width: 10,
-              ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'acm community sdu',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    '10 may, 10:15',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.gray),
-                  ),
-                ],
-              )
-            ],
-          ),
-          const SizedBox(
-            height: 2,
-          ),
-          Text(spacePost.text),
-          const SizedBox(
-            height: 2,
-          ),
-          Image.asset(spacePost.imageUrl),
-          const SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(999)),
-                    color: AppColors.backgroundColor),
-                margin: const EdgeInsets.symmetric(horizontal: 5),
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.favorite,
-                      color: AppColors.red,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(spacePost.likeCounts)
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Share.share("https://uniconnect.kz/post/142");
-                },
-                child: Container(
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(999)),
-                      color: AppColors.backgroundColor),
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.reply,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(spacePost.replyCounts)
-                    ],
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(999)),
-                    color: AppColors.backgroundColor),
-                margin: const EdgeInsets.symmetric(horizontal: 5),
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.remove_red_eye_outlined,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(spacePost.viewCounts)
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-        ],
-      ),
     );
   }
 }

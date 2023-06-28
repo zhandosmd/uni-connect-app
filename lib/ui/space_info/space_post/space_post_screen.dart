@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:uni_connect/domain/entities/space_details.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
+import 'package:collection/collection.dart';
 
-import '../../../domain/entities/space.dart';
-import '../space_info_screen.dart';
-import '../space_info_view_model.dart';
+import '../widgets/space_post_widget.dart';
 
 class Comment {
   final String name;
@@ -20,11 +20,14 @@ class Comment {
 }
 
 class SpacePostScreen extends StatelessWidget {
-  final SpacePost spacePost;
-  final Space space;
+  final SpaceDetails? spaceDetails;
+  final String? postId;
 
-  SpacePostScreen({Key? key, required this.spacePost, required this.space})
-      : super(key: key);
+  SpacePostScreen({
+    Key? key,
+    required this.postId,
+    required this.spaceDetails,
+  }) : super(key: key);
   final List<Comment> comments = [
     Comment(
       name: 'Pavel Durov',
@@ -117,8 +120,9 @@ class SpacePostScreen extends StatelessWidget {
                       height: 10,
                     ),
                     SpacePostWidget(
-                      spacePost: spacePost,
-                      space: space,
+                      spaceDetails: spaceDetails,
+                      post: spaceDetails?.posts
+                          ?.firstWhereOrNull((element) => element.id == postId),
                     ),
                     const SizedBox(
                       height: 10,

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:uni_connect/domain/entities/space.dart';
+import 'package:uni_connect/domain/entities/space_details.dart';
 
 import '../../ui/home/home_screen.dart';
 import '../data_providers/session_data_provider.dart';
@@ -271,5 +272,25 @@ class ApiClient {
       print("DioError createSpace: ${e.message}");
     }
     return authResponse;
+  }
+
+  Future<SpaceDetails?> getSpaceDetails(String? id) async {
+    SpaceDetails? spaceDetails;
+    final jwt = await SessionDataProvider().getSessionId();
+    print('jwt: $jwt');
+
+    try {
+      Response response = await _dioClient.get(
+        '$_host/space/$id',
+        options: Options(headers: {
+          'Authorization': "Bearer $jwt",
+        }),
+      );
+      spaceDetails = SpaceDetails.fromJson(response.data);
+    } on DioError catch (e) {
+      print("DioError getSpaceDetails: ${e.message}");
+    }
+
+    return spaceDetails;
   }
 }

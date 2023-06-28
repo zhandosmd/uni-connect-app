@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_connect/domain/api_client/api_client.dart';
+import 'package:uni_connect/domain/entities/space_details.dart';
 import 'package:uni_connect/ui/space_info/create_post/create_post_screen.dart';
 
 import 'create_post/create_post_view_model.dart';
@@ -23,12 +25,18 @@ class SpacePost {
 }
 
 class SpaceInfoViewModel extends ChangeNotifier {
+  final _apiClient = ApiClient();
+  SpaceDetails? spaceDetails;
   bool isLoading = true;
 
   void changeIsLoading(bool isLoading) async {
     await Future.delayed(const Duration(milliseconds: 100));
     this.isLoading = isLoading;
     notifyListeners();
+  }
+
+  Future<void> getSpaceDetails(String? id) async {
+    spaceDetails = await _apiClient.getSpaceDetails(id);
   }
 
   List<SpacePost> spacePosts = [

@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-AuthResponse authResponseFromJson(String str) => AuthResponse.fromJson(json.decode(str));
+AuthResponse authResponseFromJson(String str) =>
+    AuthResponse.fromJson(json.decode(str));
 
 String authResponseToJson(AuthResponse data) => json.encode(data.toJson());
 
@@ -14,24 +15,26 @@ class AuthResponse {
     this.success,
     this.message,
     this.accessToken,
+    this.statusCode,
   });
 
   final bool? error;
   final bool? success;
   final String? message;
   final String? accessToken;
+  final int? statusCode;
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) => AuthResponse(
-    error: json["error"],
-    success: json["success"],
-    message: json["message"],
-    accessToken: json["accessToken"],
-  );
+        error: json["error"],
+        success: json["success"],
+        message: json["message"],
+        accessToken: json["accessToken"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "error": error,
-    "success": success,
-    "message": message,
-    "accessToken": accessToken,
-  };
+        "error": error,
+        "success": success,
+        "message": message,
+        "accessToken": accessToken,
+      };
 }

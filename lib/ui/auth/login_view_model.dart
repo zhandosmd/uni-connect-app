@@ -10,7 +10,7 @@ import '../main/main_screen.dart';
 import '../registration/verification/verification_screen.dart';
 import '../registration/verification/verification_view_model.dart';
 
-class LoginViewModel extends ChangeNotifier{
+class LoginViewModel extends ChangeNotifier {
   final _apiClient = ApiClient();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -26,33 +26,34 @@ class LoginViewModel extends ChangeNotifier{
   Future<AuthResponse?> logIn({
     required String email,
     required String password,
-  }) async{
+  }) async {
     isLoading = true;
     notifyListeners();
 
-    AuthResponse? response = await _apiClient.login(email: email, password: password); // <statusCode, message>
+    AuthResponse? response = await _apiClient.login(
+        email: email, password: password); // <statusCode, message>
     isLoading = false;
     notifyListeners();
 
     return response;
   }
 
-  void changeHidePassword(){
+  void changeHidePassword() {
     hidePassword = !hidePassword;
     notifyListeners();
   }
 
-  void changeIsErrorEmail(bool isErrorEmail){
+  void changeIsErrorEmail(bool isErrorEmail) {
     this.isErrorEmail = isErrorEmail;
     notifyListeners();
   }
 
-  void changeIsErrorPassword(bool isErrorPassword){
+  void changeIsErrorPassword(bool isErrorPassword) {
     this.isErrorPassword = isErrorPassword;
     notifyListeners();
   }
 
-  void changeEmail(String currentEmail){
+  void changeEmail(String currentEmail) {
     this.currentEmail = currentEmail;
     notifyListeners();
   }
@@ -61,29 +62,41 @@ class LoginViewModel extends ChangeNotifier{
     changeIsErrorEmail(emailController.text.isEmpty);
     changeIsErrorPassword(passwordController.text.isEmpty);
 
-    if(emailController.text.isNotEmpty && passwordController.text.isNotEmpty){
-      AuthResponse? response = await logIn(email: '${emailController.text}$currentEmail', password: passwordController.text);
-      if(response?.success == true && response?.accessToken != null && response?.accessToken != ''){
+    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      AuthResponse? response = await logIn(
+          email: '${emailController.text}$currentEmail',
+          password: passwordController.text);
+      if (response?.success == true &&
+          response?.accessToken != null &&
+          response?.accessToken != '') {
         await SessionDataProvider().setSessionId(response?.accessToken ?? '');
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return const MainScreen();
-          })
-        );
-      }else{
-        if(response?.message == 'You must verify your email to activate your account'){
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+          return const MainScreen();
+        }));
+      } else {
+        if (response?.message ==
+            'You must verify your email to activate your account') {
           sendCode('${emailController.text}$currentEmail', context);
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (BuildContext context) {
-              return ChangeNotifierProvider(
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (BuildContext context) {
+            return ChangeNotifierProvider(
                 create: (_) => VerificationViewModel(),
-                child: VerificationScreen(email: emailController.text, slug: currentEmail,)
-              );
-            })
+                child: VerificationScreen(
+                  email: emailController.text,
+                  slug: currentEmail,
+                ));
+          }));
+          ErrorSnackBar.showSnackBar(
+            message: response?.message,
+            context: context,
+            color: Colors.orange,
           );
-          ErrorSnackBar.showSnackBar(message: response?.message, context: context, color: Colors.orange);
-        }else{
-          ErrorSnackBar.showSnackBar(message: response?.message, context: context);
+        } else {
+          ErrorSnackBar.showSnackBar(
+            message: 'Server Error: status code ${response?.statusCode}!',
+            context: context,
+          );
         }
       }
     }
@@ -92,8 +105,11 @@ class LoginViewModel extends ChangeNotifier{
   Future<void> sendCode(String email, BuildContext context) async {
     final authResponse = await _apiClient.sendCode(email: email);
 
-    if(authResponse?.error ?? false){
-      ErrorSnackBar.showSnackBar(message: authResponse?.message, context: context);
+    if (authResponse?.error ?? false) {
+      ErrorSnackBar.showSnackBar(
+        message: authResponse?.message,
+        context: context,
+      );
     }
   }
 }

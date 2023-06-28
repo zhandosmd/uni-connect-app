@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
-import 'package:uni_connect/configuration/loading_dialog.dart';
 import 'package:uni_connect/ui/profile/my_events/create_event/creating_step_widgets/succesfully_created.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
@@ -231,7 +230,6 @@ class _CreateStep3WidgetState extends State<CreateStep3Widget> {
                 ticketCountController.text,
               );
               await model.createEvent();
-              // await LoadingDialog.showLoadingDialog(context);
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (BuildContext context) {
                 return const SuccessfullyCreatedScreen();

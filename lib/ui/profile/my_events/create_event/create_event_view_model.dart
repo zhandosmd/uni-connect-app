@@ -20,6 +20,8 @@ class CreateEventViewModel extends ChangeNotifier {
   /// STEP 2
   final ImagePicker picker = ImagePicker();
   List<XFile> pickedImages = [];
+  XFile? pickedStoryImage;
+
   final apiClient = ApiClient();
 
   // STEP 3
@@ -50,9 +52,7 @@ class CreateEventViewModel extends ChangeNotifier {
     if (currentTab < 2) {
       currentTab++;
       notifyListeners();
-    } else {
-      // TODO push next page
-    }
+    } else {}
   }
 
   void onTapCancel(BuildContext context) {
@@ -103,15 +103,30 @@ class CreateEventViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void onTapPickStories() async {
+    pickedStoryImage = await picker.pickImage(source: ImageSource.gallery);
+
+    notifyListeners();
+  }
+
+  void onTapDeleteStories() {
+    pickedStoryImage = null;
+
+    notifyListeners();
+  }
+
   Future<void> createEvent() async {
     List<File> fileImages = [];
     for (XFile image in pickedImages) {
       fileImages.add(File(image.path));
     }
+    if (pickedStoryImage != null) {
+      fileImages.add(File(pickedStoryImage!.path));
+    }
 
     isLoading = true;
     notifyListeners();
-    apiClient.createEvent(
+    await apiClient.createEvent(
       title: title ?? '',
       date: DateFormat('MM.dd.yyyy').format(pickedDate ?? DateTime.now()),
       time: '${pickedTime?.hour}:${pickedTime?.minute}',

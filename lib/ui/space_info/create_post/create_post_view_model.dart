@@ -11,17 +11,17 @@ class CreatePostViewModel extends ChangeNotifier {
 
   final ImagePicker picker = ImagePicker();
   DateTime? pickedDate;
-  List<XFile> pickedImages = [];
+  XFile? pickedImage;
   final apiClient = ApiClient();
 
   void onTapPickImage() async {
-    pickedImages = await picker.pickMultiImage();
+    pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
     notifyListeners();
   }
 
-  void onTapDeletePhoto(int index) {
-    pickedImages = List<XFile>.from(pickedImages)..removeAt(index);
+  void onTapDeletePhoto() {
+    pickedImage = null;
 
     notifyListeners();
   }
@@ -42,14 +42,14 @@ class CreatePostViewModel extends ChangeNotifier {
     );
   }
 
-  Future<void> createSpace(String description) async {
+  Future<void> createPost(String description, String? spaceId) async {
     isLoading = true;
     notifyListeners();
-    // apiClient.createSpace(
-    //   title: title,
-    //   description: description,
-    //   image: pickedImage == null ? null : File(pickedImage!.path),
-    // );
+    await apiClient.createPost(
+      spaceId: spaceId,
+      description: description,
+      image: pickedImage == null ? null : File(pickedImage!.path),
+    );
     isLoading = false;
     notifyListeners();
   }

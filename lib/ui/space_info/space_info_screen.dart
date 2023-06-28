@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:uni_connect/domain/entities/space_details.dart';
 import 'package:uni_connect/ui/space_info/space_info_view_model.dart';
 import 'package:uni_connect/ui/space_info/space_post/space_post_screen.dart';
 import 'package:uni_connect/ui/space_info/widgets/space_post_widget.dart';
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
 import '../../domain/entities/space.dart';
+import 'space_post/space_post_view_model.dart';
 
 class SpaceInfoScreen extends StatefulWidget {
-  // final SpaceLocal space;
   final Space space;
 
   const SpaceInfoScreen({Key? key, required this.space}) : super(key: key);
@@ -31,7 +29,6 @@ class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
   @override
   Widget build(BuildContext context) {
     final model = context.read<SpaceInfoViewModel>();
-    // final spacePosts = context.select((SpaceInfoViewModel vm) => vm.spacePosts);
     final isLoading = context.select((SpaceInfoViewModel vm) => vm.isLoading);
     final spaceDetails =
         context.select((SpaceInfoViewModel vm) => vm.spaceDetails);
@@ -140,7 +137,7 @@ class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
                                       width: 5,
                                     ),
                                     Text(
-                                      '6.3K Subscribers',
+                                      '1 Subscriber',
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
@@ -186,31 +183,66 @@ class _SpaceInfoScreenState extends State<SpaceInfoScreen> {
                       ],
                     ),
                   ),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) {
-                            return SpacePostScreen(
+                  const SizedBox(height: 20),
+                  ((spaceDetails?.posts ?? []).isNotEmpty)
+                      ? ListView.separated(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) {
+                                  return ChangeNotifierProvider(
+                                    create: (_) => SpacePostViewModel(),
+                                    child: SpacePostScreen(
+                                        spaceDetails: spaceDetails,
+                                        postId: spaceDetails?.posts?[index].id),
+                                  );
+                                }));
+                              },
+                              child: SpacePostWidget(
                                 spaceDetails: spaceDetails,
-                                postId: spaceDetails?.posts?[index].id);
-                          }));
-                        },
-                        child: SpacePostWidget(
-                          spaceDetails: spaceDetails,
-                          post: spaceDetails?.posts?[index],
+                                post: spaceDetails?.posts?[index],
+                              ),
+                            );
+                          },
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const SizedBox(height: 10);
+                          },
+                          itemCount: spaceDetails?.posts?.length ?? 0,
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              height: 100,
+                            ),
+                            Image.asset(
+                              'assets/images/empty.png',
+                              height: 150,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const Text(
+                              'Unfortunately, there is no\nposts in this space.',
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Text(
+                              'To add post, click on the\n"Suggest Post" button!',
+                              style: TextStyle(),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const SizedBox(height: 10);
-                    },
-                    itemCount: spaceDetails?.posts?.length ?? 0,
-                  ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),

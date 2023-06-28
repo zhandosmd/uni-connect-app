@@ -26,7 +26,7 @@ class CreateSpaceViewModel extends ChangeNotifier {
   Future<void> createSpace(String title, String description) async {
     isLoading = true;
     notifyListeners();
-    apiClient.createSpace(
+    await apiClient.createSpace(
       title: title,
       description: description,
       image: pickedImage == null ? null : File(pickedImage!.path),

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -24,6 +23,7 @@ class SpacePostWidget extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(10))),
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -67,7 +67,7 @@ class SpacePostWidget extends StatelessWidget {
           const SizedBox(
             height: 2,
           ),
-          Image.network(post?.image ?? ''),
+          if (post?.image != null) Image.network(post?.image ?? ''),
           const SizedBox(
             height: 5,
           ),
@@ -84,14 +84,11 @@ class SpacePostWidget extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.favorite,
-                      color: AppColors.red,
-                    ),
+                    const Icon(Icons.favorite, color: Colors.white),
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(post?.likesCount.toString() ?? '0')
+                    Text(post?.likesCount.toString() ?? '1')
                   ],
                 ),
               ),
@@ -136,7 +133,7 @@ class SpacePostWidget extends StatelessWidget {
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(post?.likesCount.toString() ?? '0')
+                    Text(post?.likesCount.toString() ?? '1')
                   ],
                 ),
               ),

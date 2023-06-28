@@ -8,9 +8,14 @@ import 'package:uni_connect/ui/space_info/create_post/create_post_view_model.dar
 import 'package:uni_connect/ui/theme/app_colors.dart';
 
 import '../../common_widgets/common_functions.dart';
+import '../space_info_view_model.dart';
 
 class CreatePostScreen extends StatefulWidget {
-  const CreatePostScreen({Key? key}) : super(key: key);
+  final String? spaceId;
+  const CreatePostScreen({
+    Key? key,
+    required this.spaceId,
+  }) : super(key: key);
 
   @override
   State<CreatePostScreen> createState() => _CreatePostScreenState();
@@ -42,8 +47,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     final model = context.read<CreatePostViewModel>();
-    final pickedImages =
-        context.select((CreatePostViewModel vm) => vm.pickedImages);
+    final pickedImage =
+        context.select((CreatePostViewModel vm) => vm.pickedImage);
     final isLoading = context.select((CreatePostViewModel vm) => vm.isLoading);
     final pickedDate =
         context.select((CreatePostViewModel vm) => vm.pickedDate);
@@ -114,41 +119,39 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ),
               ),
             ),
-            Wrap(
-              children: [
-                for (int index = 0; index < pickedImages.length; index++)
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        height: (MediaQuery.of(context).size.width) / 3,
-                        width: (MediaQuery.of(context).size.width) / 3,
-                        decoration: BoxDecoration(
-                          color: AppColors.black,
-                          image: DecorationImage(
-                              image: FileImage(File(pickedImages[index].path)),
-                              fit: BoxFit.cover),
-                        ),
-                      ),
-                      Positioned(
-                        right: 6,
-                        top: 6,
-                        child: GestureDetector(
-                          onTap: () => model.onTapDeletePhoto(index),
-                          child: SvgPicture.asset(
-                              'assets/images/ic_delete_photo.svg'),
-                        ),
-                      ),
-                    ],
+            if (pickedImage != null)
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: AppColors.black,
+                      image: DecorationImage(
+                          image: FileImage(File(pickedImage.path)),
+                          fit: BoxFit.cover),
+                    ),
                   ),
-              ],
-            ),
+                  Positioned(
+                    right: 6,
+                    top: 6,
+                    child: GestureDetector(
+                      onTap: () => model.onTapDeletePhoto,
+                      child: SvgPicture.asset(
+                        'assets/images/ic_delete_photo.svg',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             if (pickedDate != null)
               Center(
                 child: Text(
                   CommonFunctions.formatDateTimeToString(pickedDate),
                   style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w500),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             const SizedBox(height: 20),
@@ -178,11 +181,26 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
-                      : const Icon(
-                          Icons.send,
-                          color: Colors.white,
+                      : GestureDetector(
+                          onTap: () async {
+                            await model.createPost(
+                              descriptionController.text,
+                              widget.spaceId,
+                            );
+                            await context
+                                .read<SpaceInfoViewModel>()
+                                .getSpaceDetails(widget.spaceId);
+                            Navigator.pop(context);
+                          },
+                          child: const Icon(
+                            Icons.send,
+                            color: Colors.white,
+                          ),
                         ),
                 ],
               ),
